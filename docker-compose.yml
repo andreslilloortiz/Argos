@@ -26,6 +26,8 @@ services:
       - NIFI_WEB_HTTP_HOST=0.0.0.0
       - SINGLE_USER_CREDENTIALS_USERNAME=admin
       - SINGLE_USER_CREDENTIALS_PASSWORD=Password123! # Demo password
+    volumes:
+      - ./data_lake:/opt/shared_data
     networks:
       - argos_net
 
@@ -59,6 +61,8 @@ services:
     ports:
       - "8080:8080" # Master UI
       - "7077:7077" # Connection port
+    volumes:
+      - ./data_lake:/opt/shared_data
     networks:
       - argos_net
 
@@ -73,6 +77,8 @@ services:
       - SPARK_SSL_ENABLED=no
     depends_on:
       - spark-master
+    volumes:
+      - ./data_lake:/opt/shared_data
     networks:
       - argos_net
 
