@@ -63,6 +63,8 @@ services:
       - "7077:7077" # Connection port
     volumes:
       - ./data_lake:/opt/shared_data
+      - ./jars/clickhouse-jdbc-0.4.6-all.jar:/opt/spark/jars/clickhouse-jdbc.jar
+      - ./etl/etl_job.py:/opt/spark_scripts/etl_job.py
     networks:
       - argos_net
 
@@ -79,6 +81,8 @@ services:
       - spark-master
     volumes:
       - ./data_lake:/opt/shared_data
+      - ./jars/clickhouse-jdbc-0.4.6-all.jar:/opt/spark/jars/clickhouse-jdbc.jar
+      - ./etl/etl_job.py:/opt/spark_scripts/etl_job.py
     networks:
       - argos_net
 
