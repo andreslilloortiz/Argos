@@ -15,58 +15,62 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# spark-submit --jars /opt/spark/jars/clickhouse-jdbc.jar /opt/spark_scripts/etl_job.py
+# --- SPARK SUBMIT ---
+# docker exec -it argos_spark_master /opt/spark/bin/spark-submit --jars /opt/spark/jars/clickhouse-jdbc.jar /opt/spark_scripts/etl_job.py
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, from_json, to_timestamp, lit
-from pyspark.sql.types import StructType, StructField, StringType, DoubleType, LongType, BooleanType
+from pyspark.sql.types import DoubleType, BooleanType
 
 # 1. INITIALIZE SPARK
-# We configure the JDBC driver here to allow communication with ClickHouse.
+# Configure JDBC driver for ClickHouse connection
 spark = SparkSession.builder \
-    .appName("ArgosETL") \
+    .appName("ArgosCryptoETL") \
     .config("spark.jars", "/opt/spark/jars/clickhouse-jdbc.jar") \
     .getOrCreate()
 
-# 2. DEFINE SCHEMA
-# Spark needs to know the structure of the JSON data coming from the Binance API.
-# Mapping based on Binance WebSocket/API standard:
-# s: Symbol, p: Price, q: Quantity, T: Trade Time, m: Is Buyer Maker
-schema = StructType([
-    StructField("s", StringType(), True),
-    StructField("p", StringType(), True),
-    StructField("q", StringType(), True),
-    StructField("T", LongType(), True),
-    StructField("m", BooleanType(), True)
-])
+# 2. EXTRACT (Read Data)
+# Read all files in the directory (using wildcard * to ignore extensions)
+# We let Spark infer the schema from the JSON content automatically
+raw_df = spark.read.json("/opt/shared_data/*")
 
-# 3. EXTRACT (Read Data)
-# Read all JSON files accumulated in the shared Data Lake directory.
-# We treat this as a batch job for now (reading the current snapshot of files).
-raw_df = spark.read.json("/opt/shared_data/*.json")
+# Check if dataframe is empty to avoid unnecessary processing errors
+if raw_df.isEmpty():
+    print(">>> No new data to process.")
+    spark.stop()
+    exit()
 
-# 4. TRANSFORM
-# Select relevant columns, cast data types, and rename to match the ClickHouse table schema.
+# 3. TRANSFORM
+# Map REST API fields (time, qty, etc.) to our ClickHouse table schema
 transformed_df = raw_df.select(
-    (col("T") / 1000).cast("timestamp").alias("event_time"), # Convert ms to timestamp
-    col("s").alias("symbol"),
-    col("p").cast(DoubleType()).alias("price"),
-    col("q").cast(DoubleType()).alias("quantity"),
-    (col("p") * col("q")).alias("quote_asset_volume"),       # Calculate total volume (Price * Quantity)
-    col("m").cast("int").alias("is_buyer_maker")             # Convert boolean to 0/1 for DB storage
+    # API returns milliseconds, convert to seconds for timestamp
+    (col("time") / 1000).cast("timestamp").alias("event_time"),
+
+    # REST API doesn't include symbol in the body, so we hardcode it for now
+    lit("BTCUSDT").alias("symbol"),
+
+    col("price").cast(DoubleType()).alias("price"),
+    col("qty").cast(DoubleType()).alias("quantity"),
+
+    # REST API provides calculated volume as 'quoteQty'
+    col("quoteQty").cast(DoubleType()).alias("quote_asset_volume"),
+
+    # Cast boolean to integer (0 or 1) for ClickHouse UInt8 storage
+    col("isBuyerMaker").cast("int").alias("is_buyer_maker")
 )
 
-# 5. LOAD (Write to ClickHouse)
-# Write the transformed dataframe to the 'trades' table via JDBC.
+# 4. LOAD (Write to ClickHouse)
+# Write the transformed dataframe to 'trades' table via JDBC
+print(">>> Writing to ClickHouse...")
 transformed_df.write \
     .format("jdbc") \
     .option("driver", "com.clickhouse.jdbc.ClickHouseDriver") \
     .option("url", "jdbc:clickhouse://clickhouse:8123/argos") \
     .option("dbtable", "trades") \
     .option("user", "default") \
-    .option("password", "") \
+    .option("password", "Argos123!") \
     .mode("append") \
     .save()
 
-print(">>> Data successfully loaded into ClickHouse!")
+print(">>> SUCCESS: Data loaded into ClickHouse!")
 spark.stop()
