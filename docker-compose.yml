@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# Demo password: Argos123!
+# Demo password: Password123!
 
 services:
   # 1. INGESTION: Apache NiFi
@@ -27,9 +27,14 @@ services:
     environment:
       - NIFI_WEB_HTTP_HOST=0.0.0.0
       - SINGLE_USER_CREDENTIALS_USERNAME=admin
-      - SINGLE_USER_CREDENTIALS_PASSWORD=Argos123!
+      - SINGLE_USER_CREDENTIALS_PASSWORD=Password123!
     volumes:
       - ./data_lake:/opt/shared_data
+      - nifi_conf:/opt/nifi/nifi-current/conf
+      - nifi_database:/opt/nifi/nifi-current/database_repository
+      - nifi_flowfile:/opt/nifi/nifi-current/flowfile_repository
+      - nifi_content:/opt/nifi/nifi-current/content_repository
+      - nifi_provenance:/opt/nifi/nifi-current/provenance_repository
     networks:
       - argos_net
 
@@ -47,7 +52,7 @@ services:
     environment:
       - CLICKHOUSE_DB=argos
       - CLICKHOUSE_USER=default
-      - CLICKHOUSE_PASSWORD=Argos123!
+      - CLICKHOUSE_PASSWORD=Password123!
       - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
     volumes:
       - ./clickhouse_data:/var/lib/clickhouse
@@ -100,7 +105,10 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=Argos123!
+      - GF_SECURITY_ADMIN_PASSWORD=Password123!
+      - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
     depends_on:
       - clickhouse
     networks:
@@ -109,3 +117,12 @@ services:
 networks:
   argos_net:
     driver: bridge
+
+volumes:
+  nifi_conf:
+  nifi_database:
+  nifi_flowfile:
+  nifi_content:
+  nifi_provenance:
+  clickhouse_data:
+  grafana_data:
