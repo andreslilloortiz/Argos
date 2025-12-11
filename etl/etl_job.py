@@ -18,9 +18,9 @@
 # --- SPARK SUBMIT ---
 # docker exec -it argos_spark_master /opt/spark/bin/spark-submit --jars /opt/spark/jars/clickhouse-jdbc.jar /opt/spark_scripts/etl_job.py
 
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, from_json, to_timestamp, lit
-from pyspark.sql.types import DoubleType, BooleanType
+from pyspark.sql import SparkSession # type: ignore
+from pyspark.sql.functions import col, from_json, to_timestamp, lit # type: ignore
+from pyspark.sql.types import DoubleType, BooleanType # type: ignore
 
 # 1. INITIALIZE SPARK
 # Configure JDBC driver for ClickHouse connection
