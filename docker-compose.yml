@@ -17,7 +17,17 @@
 
 # Demo password: Password123!
 
+# 0. UTILITY: Permission Fixer (The "Janitor")
 services:
+  # This transient container fixes ownership permissions on the shared volume
+  # so both NiFi (UID 1000) and Spark (UID 185) can read/write without errors.
+  init-permissions:
+    image: busybox
+    container_name: argos_permissions
+    command: sh -c "chown -R 1000:1000 /opt/shared_data && chmod -R 777 /opt/shared_data"
+    volumes:
+      - data_lake:/opt/shared_data
+
   # 1. INGESTION: Apache NiFi
   nifi:
     image: apache/nifi:latest
@@ -35,6 +45,9 @@ services:
       - nifi_flowfile:/opt/nifi/nifi-current/flowfile_repository
       - nifi_content:/opt/nifi/nifi-current/content_repository
       - nifi_provenance:/opt/nifi/nifi-current/provenance_repository
+    depends_on:
+      init-permissions:
+        condition: service_completed_successfully
     networks:
       - argos_net
 
