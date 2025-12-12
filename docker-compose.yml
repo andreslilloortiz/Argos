@@ -118,6 +118,36 @@ services:
     networks:
       - argos_net
 
+  # 3c. AUTOMATION: Spark Job Submitter (The "Driver")
+  etl-runner:
+    image: apache/spark:latest
+    container_name: argos_etl_runner
+    depends_on:
+      spark-master:
+        condition: service_started
+      init-permissions:
+        condition: service_completed_successfully
+    environment:
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    volumes:
+      # Must mount same volumes to access code and libs
+      - data_lake:/opt/shared_data
+      - ./jars/clickhouse-jdbc-0.9.4-all.jar:/opt/spark/jars/clickhouse-jdbc.jar
+      - ./etl/etl_job.py:/opt/spark_scripts/etl_job.py
+      - spark_checkpoints:/opt/spark_checkpoints
+    networks:
+      - argos_net
+    # Automatic restart ensures retry if Spark Master is not ready yet
+    restart: on-failure
+    # The COMMAND that runs automatically:
+    # 1. --master: Connects to the Cluster (Visibile in UI!)
+    # 2. --deploy-mode client: The logs stay in this container
+    # 3. --total-executor-cores 1: Be polite, don't use all CPU
+    command: >
+      /opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 1 --jars /opt/spark/jars/clickhouse-jdbc.jar /opt/spark_scripts/etl_job.py
+
   # 4. VISUALIZATION: Grafana
   grafana:
     image: grafana/grafana:latest

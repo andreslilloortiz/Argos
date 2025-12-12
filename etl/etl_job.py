@@ -15,9 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# --- SPARK SUBMIT ---
-# docker exec -it argos_spark_master /opt/spark/bin/spark-submit --jars /opt/spark/jars/clickhouse-jdbc.jar /opt/spark_scripts/etl_job.py
-
 # This file is part of Argos.
 # Copyright (C) 2025 Andrés Lillo Ortiz
 
@@ -82,7 +79,7 @@ def process_micro_batch(df, epoch_id):
 
     # --- LOAD (ClickHouse) ---
     # JDBC URL includes credentials and 'dialect=ansi' to support Spark's quoting style
-    jdbc_url = "jdbc:clickhouse://clickhouse:8123/argos?user=default&password=Password123!&dialect=ansi"
+    jdbc_url = "jdbc:clickhouse://clickhouse:8123/argos?user=default&password=Password123!"
 
     try:
         transformed_df.write \
