@@ -24,9 +24,10 @@ services:
   init-permissions:
     image: busybox
     container_name: argos_permissions
-    command: sh -c "chown -R 1000:1000 /opt/shared_data && chmod -R 777 /opt/shared_data"
+    command: sh -c "chown -R 1000:1000 /opt/shared_data && chmod -R 777 /opt/shared_data && chown -R 185:185 /opt/spark_checkpoints && chmod -R 777 /opt/spark_checkpoints"
     volumes:
       - data_lake:/opt/shared_data
+      - spark_checkpoints:/opt/spark_checkpoints
 
   # 1. INGESTION: Apache NiFi
   nifi:
@@ -92,6 +93,9 @@ services:
       - ./jars/clickhouse-jdbc-0.9.4-all.jar:/opt/spark/jars/clickhouse-jdbc.jar
       - ./etl/etl_job.py:/opt/spark_scripts/etl_job.py
       - spark_checkpoints:/opt/spark_checkpoints
+    depends_on:
+      init-permissions:
+        condition: service_completed_successfully
     networks:
       - argos_net
 
