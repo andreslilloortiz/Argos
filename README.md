@@ -1,6 +1,6 @@
 # Argos
 
-Real-Time Crypto Intelligence & Market Microstructure Pipeline using a containerized Lambda architecture (NiFi, Spark Streaming, ClickHouse, Grafana).
+Real-Time Crypto Intelligence & Market Microstructure Pipeline Using a Containerized Lambda Architecture (NiFi, Spark Streaming, ClickHouse, Grafana).
 
 ## About the Project
 
