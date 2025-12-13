@@ -122,10 +122,6 @@ The main interface for analysis on http://localhost:3000. The dashboard is divid
 
 ![demo](demo/demo.gif)
 
-## System Architecture
-
-![architecture](architecture/architecture.png)
-
 ## Project Structure
 
 The codebase is organized to separate infrastructure, logic, and configuration:
@@ -147,6 +143,20 @@ argos/
 │   └── Argos-*.json          # Grafana Dashboard
 └── README.md                 # Documentation
 ```
+
+## System Architecture
+
+Argos implements a **Containerized Deployment Architecture** designed to maximize data integrity and modularity. The pipeline is orchestrated entirely within a Docker Host, isolating ingestion, processing, and storage concerns.
+
+![Argos Architecture](architecture/architecture.png)
+
+The data lifecycle follows a strict linear path:
+
+1.  **External Source:** The pipeline polls the **Binance Spot API** via HTTPS/REST to retrieve aggregated trades.
+2.  **Ingestion Layer (NiFi):** Acts as a secure gateway, managing rate limits and writing raw JSON batches to a **Shared Docker Volume**. This decouples ingestion from processing, preventing data loss during maintenance.
+3.  **Processing Layer (Spark):** A Structured Streaming job monitors the shared volume for new files (`File I/O`), performs ETL transformations, and casts data types in real-time.
+4.  **Storage Layer (ClickHouse):** Receives processed batches via JDBC over TCP/8123. Data is stored in a `MergeTree` table optimized for high-speed time-series queries.
+5.  **Visualization Layer (Grafana):** Queries the ClickHouse database via HTTP/SQL to render the dashboard for the end-user.
 
 ## Developer Notes
 
