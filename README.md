@@ -68,7 +68,7 @@ Connect the visualization layer to the database:
     * **Password:** `Password123!`.
     * Click **Save & Test**.
 
-3.  **Import Dashboard:** Go to *Dashboards* -> *New* -> *Import*. Upload the `dashboards/Argos-*.json` file.
+3.  **Import Dashboard:** Go to *Dashboards* -> *New* -> *Import*. Upload the `dashboards/Argos-*.json` file selecting the `Argos DB` connection.
 
 ### 4. Analyze the Binance Data
 
