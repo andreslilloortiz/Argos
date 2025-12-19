@@ -80,7 +80,7 @@ The Argos platform is divided into three logical layers, accessible via their re
 
 ### 1. Ingestion Layer (Apache NiFi)
 
-  * **URL:** http://localhost:8443
+  * **URL:** https://localhost:8443
   * **Function:** Handles the connection to Binance API. It manages rate limits, buffers raw data, and handles back-pressure before sending data to the Data Lake.
   * **Status:** You should see the `argos_ingestion` Process Group in "RUNNING" state.
 
