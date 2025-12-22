@@ -33,7 +33,7 @@
       "type": "datasource",
       "id": "grafana-clickhouse-datasource",
       "name": "ClickHouse",
-      "version": "4.11.2"
+      "version": "4.11.4"
     },
     {
       "type": "panel",
@@ -107,7 +107,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "${DS_CLICKHOUSE}"
       },
-      "description": "Most recent execution price streamed from Binance.",
+      "description": "Latest Bitcoin execution price and its absolute value change over the last minute.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -188,7 +188,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "${DS_CLICKHOUSE}"
       },
-      "description": "Real-time OHLCV (Open, High, Low, Close, Volume) chart aggregated by minute.\nSource: Binance WebSocket via NiFi & Spark Streaming.\nVisualizes market structure and immediate price trends.",
+      "description": "BTC/USDT price action using 1-minute OHLC candlesticks. • Green candles represent upward movement (bullish). • Red candles represent downward movement (bearish). The lower bars indicate trade volume for each interval.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -766,7 +766,7 @@
   "timezone": "browser",
   "title": "Argos",
   "uid": "adkklng",
-  "version": 8,
+  "version": 7,
   "weekStart": "",
   "id": null
 }

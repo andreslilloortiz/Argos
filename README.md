@@ -98,9 +98,13 @@ The Argos platform is divided into three logical layers, accessible via their re
 
 The main interface for analysis on http://localhost:3000. The dashboard is divided into diferent quadrants:
 
-  * **🤑​ BTC Live Price:** Most recent execution price streamed from Binance.
+  * **🤑​ BTC Live Price:** Latest Bitcoin execution price and its absolute value change over the last minute.
 
-  * **📈 BTC/USDT • Price Action (1m):** Real-time OHLCV (Open, High, Low, Close, Volume) chart aggregated by minute. Source: Binance WebSocket via NiFi & Spark Streaming. Visualizes market structure and immediate price trends.
+  * **📈 BTC/USDT • Price Action (1m):** BTC/USDT price action using 1-minute OHLC candlesticks.
+    - Green candles represent upward movement (bullish).
+    - Red candles represent downward movement (bearish).
+
+    The lower bars indicate trade volume for each interval.
 
   * **⚖️ Order Flow Delta • Buy vs. Sell Pressure:** Breakdown of Taker Volume (Aggressive Orders).
     - Green (Above 0): Aggressive Buys. Indicates demand absorption.
