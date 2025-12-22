@@ -30,7 +30,7 @@ Before getting started, ensure you have the following installed:
 
 ## Quick Start
 
-> **⚠️ Important:** Steps 2 and 4 are **One-Time Setup** tasks. Docker Volumes will persist your NiFi Flow, ClickHouse Data, and Grafana Dashboard. You won't need to repeat them after restarts.
+> **⚠️ Important:** Steps 2 to 4 are **One-Time Setup** tasks. Docker Volumes will persist your NiFi Flow, ClickHouse Data, and Grafana Dashboard. You won't need to repeat them after restarts.
 
 ### 1. Launch Infrastructure
 
@@ -50,7 +50,7 @@ Since automation is disabled for security, import the flow manually:
 
 ### 3. Start NiFi Flow (Ingestion)
 
-Using the NiFi UI (https://localhost:8443 User: `admin` / Pass: `Password123!`), click on the Process Group to select it. In the **Operation** floating menu (usually on the left), click the **Start** (Play) button.
+Using the NiFi UI (https://localhost:8443 User: `admin` / Pass: `Password123!`), click on the Process Group to select it. In the **Operation** floating menu (usually on the left), click the **Start** (Play) button. If the NiFi Process Group is not stopped prior to the infrastructure shutdown, it will automatically resume once the infrastructure is back online.
 
 ### 4. Configure Grafana (Visualization)
 
@@ -70,7 +70,7 @@ Connect the visualization layer to the database:
 
 3.  **Import Dashboard:** Go to *Dashboards* -> *New* -> *Import*. Upload the `dashboards/Argos-*.json` file selecting the `Argos DB` connection.
 
-### 4. Analyze the Binance Data
+### 5. Analyze the Binance Data
 
 Access to the **Grafana UI** (http://localhost:3000 User: `admin` / Pass: `Password123!`) and open the **Argos Dashboard**. You will see Real-Time data represented with significant metrics and visualizations.
 
